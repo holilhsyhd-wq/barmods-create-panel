@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pterodactyl Server Creator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Create Pterodactyl Server 🚀</h1>
+        <form id="createServerForm">
+            <label for="serverName">Nama Server:</label>
+            <input type="text" id="serverName" placeholder="Contoh: My Awesome Bot" required>
+
+            <label for="ram">Pilih RAM:</label>
+            <select id="ram" required>
+                <option value="" disabled selected>-- Pilih Opsi RAM --</option>
+                <option value="1024">1 GB</option>
+                <option value="2048">2 GB</option>
+                <option value="3072">3 GB</option>
+                <option value="4096">4 GB</option>
+                <option value="5120">5 GB</option>
+                <option value="6144">6 GB</option>
+                <option value="7192">7 GB</option>
+                <option value="8192">8 GB</option>
+                <option value="9216">9 GB</option>
+                <option value="0">Unlimited</option>
+            </select>
+
+            <button type="submit" id="submitButton">Buat Server Sekarang</button>
+        </form>
+
+        <div id="result" class="hidden">
+            <h2>✅ Berhasil!</h2>
+            <p>Simpan detail berikut dengan aman.</p>
+            <div class="result-box">
+                <strong>URL Panel:</strong> <a id="panelUrl" href="#" target="_blank"></a><br>
+                <strong>Username:</strong> <code id="username"></code><br>
+                <strong>Email:</strong> <code id="email"></code><br>
+                <strong>Password:</strong> <code id="password"></code>
+            </div>
+        </div>
+
+        <div id="error" class="hidden"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
