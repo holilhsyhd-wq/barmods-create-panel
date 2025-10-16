@@ -1,19 +1,10 @@
 const fetch = require('node-fetch');
+const config = require('../config.js'); // Mengambil konfigurasi dari file config.js
 
-// --- Konfigurasi Pterodactyl (Diterapkan Langsung) ---
-// PERINGATAN: Tidak aman untuk produksi. Gunakan Environment Variables.
-const PTERO_URL = 'https://zeroikdarkonly.jkt48-private.com';
-const PTERO_API_KEY = 'ptla_WS98J6uVvYcJwNpBfndwGtJMbWVswFejmlEDUmf7UQE';
-
-// Anda masih perlu mengatur ini di Environment Variables atau di sini
-const PTERO_EGG_ID = 15; // Contoh, ganti dengan ID Egg Anda
-const PTERO_LOCATION_ID = 1; // Contoh, ganti dengan ID Lokasi Anda
-const PTERO_DISK_MB = 5120; // Contoh, 5 GB
-const PTERO_CPU_PERCENT = 100; // Contoh, 100% untuk 1 core
-
-// Fungsi untuk membuat pengguna baru di Pterodactyl
+// --- FUNGSI MEMBUAT PENGGUNA (Sama seperti di bot.js) ---
 async function createUser(serverName) {
-    const url = `${PTERO_URL}/api/application/users`;
+    const pterodactyl = config.pterodactyl;
+    const url = `${pterodactyl.domain}/api/application/users`;
     
     const randomString = Math.random().toString(36).substring(7);
     const email = `${serverName.toLowerCase().replace(/\s+/g, '')}@${randomString}.com`;
@@ -31,7 +22,7 @@ async function createUser(serverName) {
     const response = await fetch(url, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${PTERO_API_KEY}`,
+            'Authorization': `Bearer ${pterodactyl.apiKey}`,
             'Content-Type': 'application/json', 'Accept': 'application/json'
         },
         body: JSON.stringify(userData)
@@ -44,25 +35,31 @@ async function createUser(serverName) {
     return { user: data.attributes, password: password };
 }
 
-// Fungsi untuk membuat server
+// --- FUNGSI MEMBUAT SERVER (Sama seperti di bot.js) ---
 async function createServer(serverName, memory, pterodactylUserId) {
-    const url = `${PTERO_URL}/api/application/servers`;
+    const pterodactyl = config.pterodactyl;
+    const url = `${pterodactyl.domain}/api/application/servers`;
+
     const serverData = {
         name: serverName,
         user: pterodactylUserId,
-        egg: PTERO_EGG_ID,
+        egg: pterodactyl.eggId,
         docker_image: "ghcr.io/parkervcp/yolks:nodejs_18",
         startup: "if [[ -d .git ]]; then git pull; fi; if [[ ! -z ${NODE_PACKAGES} ]]; then /usr/local/bin/npm install ${NODE_PACKAGES}; fi; if [[ -f /home/container/package.json ]]; then /usr/local/bin/npm install; fi; node index.js",
+        environment: {
+            // Variabel lingkungan untuk server baru, bisa Anda sesuaikan
+            CMD_RUN: "node index.js"
+        },
         limits: {
-            memory: parseInt(memory, 10),
+            memory: parseInt(memory),
             swap: 0,
-            disk: PTERO_DISK_MB,
+            disk: pterodactyl.disk,
             io: 500,
-            cpu: PTERO_CPU_PERCENT,
+            cpu: pterodactyl.cpu,
         },
         feature_limits: { databases: 1, allocations: 1, backups: 1 },
         deploy: {
-            locations: [PTERO_LOCATION_ID],
+            locations: [pterodactyl.locationId],
             dedicated_ip: false,
             port_range: []
         }
@@ -71,7 +68,7 @@ async function createServer(serverName, memory, pterodactylUserId) {
     const response = await fetch(url, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${PTERO_API_KEY}`,
+            'Authorization': `Bearer ${pterodactyl.apiKey}`,
             'Content-Type': 'application/json', 'Accept': 'application/json'
         },
         body: JSON.stringify(serverData)
@@ -84,7 +81,7 @@ async function createServer(serverName, memory, pterodactylUserId) {
     return data.attributes;
 }
 
-// Handler utama untuk request API
+// --- HANDLER UTAMA UNTUK WEBSITE ---
 module.exports = async (req, res) => {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method Not Allowed' });
@@ -96,12 +93,16 @@ module.exports = async (req, res) => {
     }
 
     try {
+        // Langkah 1: Buat pengguna baru
         const { user, password } = await createUser(serverName);
+
+        // Langkah 2: Buat server dengan ID pengguna yang baru
         const serverInfo = await createServer(serverName, ram, user.id);
 
+        // Langkah 3: Kirim semua detail jika berhasil
         res.status(201).json({
             message: 'Server dan akun berhasil dibuat!',
-            panelUrl: PTERO_URL,
+            panelUrl: config.pterodactyl.domain,
             loginDetails: {
                 username: user.username,
                 email: user.email,
