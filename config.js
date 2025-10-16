@@ -4,7 +4,9 @@ const config = {
     // Pengaturan Pterodactyl Panel Anda
     pterodactyl: {
         // Ganti dengan URL panel Anda
-        domain: "https://zeroikdarkonly.jkt48-private.com", 
+        // SALAH: "https://zeroikdarkonly.jkt48-private.com"
+        // BENAR:
+        domain: "https://zeroikdarkonly.jkt48-private.com", // Biarkan ini sebagai domain utama
         
         // Ganti dengan Application API Key Anda
         apiKey: "ptla_WS98J6uVvYcJwNpBfndwGtJMbWVswFejmlEDUmf7UQE", 
