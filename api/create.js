@@ -1,17 +1,20 @@
 const fetch = require('node-fetch');
 
-// --- Pengambilan Konfigurasi dari Environment Variables ---
-const PTERO_URL = process.env.PTERO_URL;
-const PTERO_API_KEY = process.env.PTERO_API_KEY;
-const PTERO_EGG_ID = parseInt(process.env.PTERO_EGG_ID, 10);
-const PTERO_LOCATION_ID = parseInt(process.env.PTERO_LOCATION_ID, 10);
-const PTERO_DISK_MB = parseInt(process.env.PTERO_DISK_MB, 10);
-const PTERO_CPU_PERCENT = parseInt(process.env.PTERO_CPU_PERCENT, 10);
+// --- Konfigurasi Pterodactyl (Diterapkan Langsung) ---
+// PERINGATAN: Tidak aman untuk produksi. Gunakan Environment Variables.
+const PTERO_URL = 'https://zeroikdarkonly.jkt48-private.com';
+const PTERO_API_KEY = 'ptla_WS98J6uVvYcJwNpBfndwGtJMbWVswFejmlEDUmf7UQE';
+
+// Anda masih perlu mengatur ini di Environment Variables atau di sini
+const PTERO_EGG_ID = 15; // Contoh, ganti dengan ID Egg Anda
+const PTERO_LOCATION_ID = 1; // Contoh, ganti dengan ID Lokasi Anda
+const PTERO_DISK_MB = 5120; // Contoh, 5 GB
+const PTERO_CPU_PERCENT = 100; // Contoh, 100% untuk 1 core
 
 // Fungsi untuk membuat pengguna baru di Pterodactyl
 async function createUser(serverName) {
     const url = `${PTERO_URL}/api/application/users`;
-
+    
     const randomString = Math.random().toString(36).substring(7);
     const email = `${serverName.toLowerCase().replace(/\s+/g, '')}@${randomString}.com`;
     const username = `${serverName.toLowerCase().replace(/\s+/g, '')}_${randomString}`;
@@ -48,7 +51,7 @@ async function createServer(serverName, memory, pterodactylUserId) {
         name: serverName,
         user: pterodactylUserId,
         egg: PTERO_EGG_ID,
-        docker_image: "ghcr.io/parkervcp/yolks:nodejs_18", // Sesuaikan jika perlu
+        docker_image: "ghcr.io/parkervcp/yolks:nodejs_18",
         startup: "if [[ -d .git ]]; then git pull; fi; if [[ ! -z ${NODE_PACKAGES} ]]; then /usr/local/bin/npm install ${NODE_PACKAGES}; fi; if [[ -f /home/container/package.json ]]; then /usr/local/bin/npm install; fi; node index.js",
         limits: {
             memory: parseInt(memory, 10),
@@ -93,13 +96,9 @@ module.exports = async (req, res) => {
     }
 
     try {
-        // Langkah 1: Buat pengguna
         const { user, password } = await createUser(serverName);
-
-        // Langkah 2: Buat server dengan ID pengguna yang baru
         const serverInfo = await createServer(serverName, ram, user.id);
 
-        // Langkah 3: Kirim kembali semua detail jika berhasil
         res.status(201).json({
             message: 'Server dan akun berhasil dibuat!',
             panelUrl: PTERO_URL,
