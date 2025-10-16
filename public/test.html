@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tes Koneksi API Pterodactyl</title>
+    <style>
+        body { font-family: sans-serif; background: #23272A; color: white; padding: 2rem; }
+        button { font-size: 1.2rem; padding: 0.8rem 1.5rem; cursor: pointer; }
+        h1 { color: #5865F2; }
+        pre { background: #1e1f22; border: 1px solid #40444B; padding: 1rem; border-radius: 5px; white-space: pre-wrap; word-break: break-all; margin-top: 1.5rem;}
+    </style>
+</head>
+<body>
+    <h1>🧪 Tes Diagnostik API Pterodactyl</h1>
+    <p>Klik tombol di bawah ini untuk mengirim permintaan sederhana ke API panel Anda dan melihat jawaban mentahnya.</p>
+    <button id="testButton">Mulai Tes API</button>
+    
+    <h2>Hasil Tes:</h2>
+    <pre id="result">Menunggu untuk memulai tes...</pre>
+
+    <script>
+        const testButton = document.getElementById('testButton');
+        const resultDiv = document.getElementById('result');
+
+        testButton.addEventListener('click', async () => {
+            resultDiv.textContent = 'Menghubungi server, mohon tunggu...';
+            testButton.disabled = true;
+
+            try {
+                const response = await fetch('/api/test'); // Memanggil script tes kita
+                const data = await response.text();
+                resultDiv.textContent = data;
+            } catch (error) {
+                resultDiv.textContent = 'Gagal menjalankan tes. Error: ' + error.message;
+            } finally {
+                testButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
