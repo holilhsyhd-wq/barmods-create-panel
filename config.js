@@ -9,7 +9,7 @@ const config = {
         domain: "https://zeroikdarkonly.jkt48-private.com", // Biarkan ini sebagai domain utama
         
         // Ganti dengan Application API Key Anda
-        apiKey: "ptla_WS98J6uVvYcJwNpBfndwGtJMbWVswFejmlEDUmf7UQE", 
+        apiKey: "ptla_kZhcIqvgX6NgXkTKdSFnEwUt5aV13Q4Q6kdR9C9OqbN", 
         
         // GANTI DENGAN PENGATURAN SERVER DEFAULT ANDA
         eggId: 15,          // ID dari Egg yang akan digunakan (misal: 15 untuk Node.js)
